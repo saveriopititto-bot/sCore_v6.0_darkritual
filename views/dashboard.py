@@ -5,10 +5,8 @@ from datetime import datetime, timedelta
 from config import Config
 from engine.core import ScoreEngine, RunMetrics
 from engine.dashboard_logic import DashboardLogic
-from ui.visuals import (
     render_history_table, render_trend_chart, render_scatter_chart, 
-    render_zones_chart, render_quality_badge, render_trend_card, 
-    get_coach_feedback
+    render_zones_chart, get_coach_feedback
 )
 from ui.feedback import render_feedback_form
 from ui.legal import render_legal_section
