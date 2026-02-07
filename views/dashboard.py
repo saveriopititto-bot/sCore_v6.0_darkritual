@@ -140,7 +140,6 @@ def render_dashboard(auth_svc, db_svc):
                     st.write("**Dettagli Calcolo Score**")
                     st.json(cur_run.get('SCORE_DETAIL', {}))
                     st.write("**Raw Row Data**")
-
                     st.json(cur_run.to_dict())
             
             # --- SEZIONE CHART (Restored) ---
