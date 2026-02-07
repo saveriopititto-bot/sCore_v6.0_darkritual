@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from config import Config
 
 # Components
