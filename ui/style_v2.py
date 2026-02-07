@@ -112,5 +112,5 @@ def load_custom_css():
         </script>
     """, unsafe_allow_html=True)
 
-def apply_theme():
+def apply_theme(theme_name=None):
     load_custom_css()
