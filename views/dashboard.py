@@ -5,14 +5,12 @@ from datetime import datetime, timedelta
 from config import Config
 from engine.core import ScoreEngine, RunMetrics
 from engine.dashboard_logic import DashboardLogic
-from ui.visuals import (
     render_history_table, render_trend_chart, render_scatter_chart, 
     render_zones_chart, render_quality_badge, render_trend_card, 
-    get_coach_feedback, quality_circle, trend_circle, 
-    consistency_circle, efficiency_circle, 
-    zones_circle
+    get_coach_feedback
 )
 from ui.feedback import render_feedback_form
+from ui.legal import render_legal_section
 
 # Components
 from components.header import render_header
@@ -21,16 +19,17 @@ from components.kpi import render_kpi_grid
 
 def render_dashboard(auth_svc, db_svc):
     # 1. HEADER
-    render_header()
-
-    # 2. TOP SECTION (Profile & Controls)
-    phys_params, start_sync, days_to_fetch = render_top_section(auth_svc, db_svc)
-    ftp = phys_params.get('ftp', Config.DEFAULT_FTP)
-    
     # context
     ath = st.session_state.strava_token.get("athlete", {})
     athlete_name = f"{ath.get('firstname', 'Atleta')} {ath.get('lastname', '')}"
     athlete_id = ath.get("id")
+
+    # 1. HEADER
+    render_header(athlete_name)
+
+    # 2. TOP SECTION (Profile & Controls)
+    phys_params, start_sync, days_to_fetch = render_top_section(auth_svc, db_svc)
+    ftp = phys_params.get('ftp', Config.DEFAULT_FTP)
 
     # --- 1. AUTO-AGGIORNAMENTO ALL'AVVIO (3 MESI) ---
     # FIX: Controlla anche se il DB è effettivamente vuoto, non solo il flag di sessione
@@ -110,15 +109,20 @@ def render_dashboard(auth_svc, db_svc):
             cur_run = df.iloc[0]
             delta_val = logic.calculate_delta(df)
             
-            score_color = "#FFCF96" # Statico
-            if delta_val > 0.005: score_color = "#CDFAD5" 
-            elif delta_val < -0.005: score_color = "#FF8080" 
-
-            # eng already initialized in logic
+            # --- MIDDLE SECTION: METRICHE PRINCIPALI (KPI) ---
             
+            # 1. Recupera Score Numerico
+            current_score = cur_run.get('SCORE', 0)
             
-            # --- MIDDLE SECTION: METRICHE PRINCIPALI (KPI)
-            render_kpi_grid(cur_run, score_color)
+            # 2. CALCOLO METRICHE (Spostato prima del rendering)
+            quality_data = logic.get_run_quality(current_score)
+            trend_data = cur_run.get("Trend", {})
+            consistency_data = logic.prepare_consistency_score(df)
+            ef_data = logic.get_efficiency_factor(cur_run)
+            zones_pwr = logic.get_zones(cur_run, ftp)
+            
+            # 3. RENDER FULL NEON GRID
+            render_kpi_grid(cur_run, quality_data, trend_data, consistency_data, ef_data, zones_pwr)
         
             if st.session_state.get("dev_mode"):
                 with st.expander("⚙️ Score Process Logs (Debug Formula)", expanded=False):
@@ -136,56 +140,22 @@ def render_dashboard(auth_svc, db_svc):
                     st.json(cur_run.get('SCORE_DETAIL', {}))
                     st.write("**Raw Row Data**")
                     st.json(cur_run.to_dict())
+                    st.json(cur_run.to_dict())
             
-        
-            # --- GAMING FEEDBACK LAYER (Fix: Mapping Colonne Corretto) ---
+            # --- SEZIONE CHART (Restored) ---
+            st.markdown("### 📊 Analisi Grafica", unsafe_allow_html=True)
+            col_trend, col_scatter = st.columns([1.2, 1], gap="medium")
             
-            # 1. Recupera Score Numerico
-            current_score = cur_run.get('SCORE', 0)
+            with col_trend:
+                render_trend_chart(df)
+                
+            with col_scatter:
+                render_scatter_chart(cur_run.get('raw_watts', []), cur_run.get('raw_hr', []))
+                
+            # Zones Chart (Full Width or below)
+            render_zones_chart(zones_pwr)
             
-            # 2. CALCOLO QUALITÀ (Strategia Ibrida)
-            quality_data = logic.get_run_quality(current_score)
-
-            # 3. Recupera Trend dal DB
-            trend_data = cur_run.get("Trend", {})
-            
-            # 4. CALCOLO CONSISTENZA
-            consistency_data = logic.prepare_consistency_score(df)
-            
-            # 6. Efficiency Factor (Watt / Cuore)
-            ef_data = logic.get_efficiency_factor(cur_run)
-
-            # 7. Distribuzione Zone (per il Cerchio)
-            # Calcoliamo le zone potenza (o cardio se mancano i watt) per il cerchio riassuntivo
-            zones_pwr = logic.get_zones(cur_run, ftp)
-            
-            # 8. Generazione HTML e Rendering
-            html_quality = quality_circle(quality_data)
-            html_trend = trend_circle(trend_data)
-            html_consistency = consistency_circle(consistency_data)
-            html_efficiency = efficiency_circle(ef_data)
-            html_zones = zones_circle(zones_pwr)
-
-            st.markdown("""
-            <style>
-                .metric-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: -10px; margin-bottom: 20px; }
-                .metric-row > div { transform: scale(0.95); }
-            </style>
-            """, unsafe_allow_html=True)
-
-            st.markdown(f"""
-            <div class="metric-row">
-                <div>{html_quality}</div>
-                <div>{html_trend}</div>
-                <div>{html_consistency}</div>
-                <div>{html_efficiency}</div>
-                <div>{html_zones}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-        
-            
-            # --- SEZIONE DETTAGLI UNIFICATA (Responsive Horizontal Row) ---
+            st.divider()
             st.markdown('<div class="details-row">', unsafe_allow_html=True)
             c_achieve, c_arch, c_bug, c_leg = st.columns(4, gap="small")
                         

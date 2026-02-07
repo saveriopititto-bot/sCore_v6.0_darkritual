@@ -54,142 +54,155 @@ def get_score_tier(value, metric_type="score"):
 
 # --- 2. UNIVERSAL RENDERING COMPONENT ---
 
-def render_stat_card(value, label, color, size=155, variant="simple", progress=0.0, margin_fix=None, tier=None):
-    """
-    Universal component to render a circular stat card.
-    
-    Args:
-        variant (str): "simple" (border), "glass" (border+glass), "progress" (svg dash)
-        margin_fix (str): "left" | "right" | None (for negative margins)
-        tier (str): Score tier for dynamic hover (epic/great/solid/weak)
-    """
-    # Style Overrides
-    margin_style = ""
-    if margin_fix == "right": margin_style = "margin-right: -25px; z-index: 1;"
-    elif margin_fix == "left": margin_style = "margin-left: -25px; z-index: 1;"
-    
-    # Base CSS Classes
-    container_class = "stat-circle"
-    if variant == "glass": container_class += " glass-card"
-    
-    # Data attribute for tier-based hover
-    tier_attr = f'data-score-tier="{tier}"' if tier else ""
-    
-    # 1. VARIANT: SCORE PROGRESS (Central SVG)
-    if variant == "progress":
-        circumference = 691
-        dash_val = (progress / 100) * circumference
-        return f"""<div class="score-circle-container" {tier_attr} style="display: flex; justify-content: center; cursor: default; position: relative; z-index: 10;">
-<div style="position: relative; width: {size}px; height: {size}px;">
-<svg class="score-circle-svg" width="{size}" height="{size}" style="position: absolute; top:0; left:0; transform: rotate(-90deg);">
-<circle cx="{size/2}" cy="{size/2}" r="{size/2 - 5}" stroke="rgba(255,255,255,0.15)" stroke-width="8" fill="transparent" />
-<circle class="progress" cx="{size/2}" cy="{size/2}" r="{size/2 - 5}" style="stroke: {color} !important; stroke-dasharray: {dash_val}, 1000; stroke-width: 8px !important;" />
-</svg>
-<div style="position: absolute; top:15px; left:15px; width: {size-30}px; height: {size-30}px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding:0; box-shadow:none; border: 5.5px solid {color}; background: #FFFFFF;">
-<span style="opacity: 0.7; font-size: 0.9rem; font-weight: 700; letter-spacing: 1px;">{label}</span>
-<span style="color: {color}; font-size: 5rem; font-weight: 800; line-height: 0.9;">{value}</span>
-</div>
-</div>
-</div>"""
+# --- 2. NEON RENDERING COMPONENTS (v4.1) ---
 
-    # 2. VARIANT: GLASS / SIMPLE (Border Based)
-    # Glass variant uses 'glass-card' class and thinner font for Label
-    return f"""<div class="{container_class}" {tier_attr} style="--border-color: {color}; width: {size}px; height: {size}px; border: 4px solid {color}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding:0; {margin_style}">
-<span style="opacity: 0.7; font-size: 0.70rem; font-weight: 700;">{label}</span>
-<span style="color: {color}; font-size: 2.5rem; font-weight: 800; line-height: 1;">{value}</span>
-</div>"""
+def render_neon_score(score):
+    try: val = float(score)
+    except: val = 0.0
+    
+    color = get_score_color(val)
+    # Determine gradient/border color class or inline style
+    # For simplicity, we use the color directly in style
+    
+    return f"""
+    <div class="relative w-40 h-40 md:w-48 md:h-48 flex items-center justify-center transform hover:scale-105 transition-transform duration-500 z-20 mx-[-10px]">
+        <div class="absolute inset-0 rounded-full bg-gradient-to-br from-green-100 to-transparent dark:from-green-900/20 opacity-50 blur-xl"></div>
+        <div class="absolute inset-0 rounded-full border-[6px] border-green-50 dark:border-green-900/30"></div>
+        <div class="absolute inset-0 rounded-full border-[6px]" style="border-color: {color}; border-left-color: transparent; border-bottom-color: transparent; transform: rotate(-45deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));"></div>
+        <div class="text-center z-10 bg-white dark:bg-surface-dark rounded-full w-32 h-32 flex flex-col items-center justify-center shadow-2xl border border-gray-100 dark:border-gray-700">
+            <span class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-[0.15em] mb-0.5 leading-none">Score</span>
+            <span class="text-4xl md:text-5xl font-black tracking-tighter leading-none" style="color: {color};">{val:.1f}</span>
+        </div>
+    </div>
+    """
+
+def render_neon_drift(drift):
+    try: val = float(drift)
+    except: val = 0.0
+    
+    color = get_drift_color(val)
+    
+    return f"""
+    <div class="relative w-24 h-24 md:w-28 md:h-28 flex items-center justify-center transform hover:scale-105 transition-transform duration-500">
+        <div class="absolute inset-0 rounded-full border-[3px] border-yellow-100 dark:border-yellow-900/30"></div>
+        <div class="absolute inset-0 rounded-full border-[3px] border-transparent" style="border-top-color: {color}; transform: rotate(-90deg);"></div>
+        <div class="text-center z-10 bg-white/80 dark:bg-surface-dark/80 backdrop-blur-sm rounded-full w-20 h-20 flex flex-col items-center justify-center shadow-soft ring-1 ring-gray-100 dark:ring-gray-700">
+            <span class="text-[0.45rem] font-bold text-gray-400 uppercase tracking-wider mb-0 leading-none">Drift</span>
+            <span class="text-lg md:text-xl font-extrabold leading-tight" style="color: {color};">{val:.1f}%</span>
+        </div>
+        <div class="absolute inset-0 rounded-full shadow-glow-yellow opacity-20 animate-pulse"></div>
+    </div>
+    """
+
+def render_neon_percentile(pct):
+    try: val = float(pct)
+    except: val = 0.0
+    
+    color = get_percentile_color(val)
+    
+    return f"""
+    <div class="relative w-24 h-24 md:w-28 md:h-28 flex items-center justify-center transform hover:scale-105 transition-transform duration-500">
+        <div class="absolute inset-0 rounded-full border-[3px] border-red-100 dark:border-red-900/30"></div>
+        <div class="absolute inset-0 rounded-full border-[3px] border-transparent" style="border-top-color: {color}; transform: rotate(45deg);"></div>
+        <div class="text-center z-10 bg-white/80 dark:bg-surface-dark/80 backdrop-blur-sm rounded-full w-20 h-20 flex flex-col items-center justify-center shadow-soft ring-1 ring-gray-100 dark:ring-gray-700">
+            <span class="text-[0.45rem] font-bold text-gray-400 uppercase tracking-wider mb-0 leading-none">Percentile</span>
+            <span class="text-lg md:text-xl font-extrabold leading-tight" style="color: {color};">{val:.1f}%</span>
+        </div>
+        <div class="absolute inset-0 rounded-full shadow-glow-red opacity-20 animate-pulse"></div>
+    </div>
+    """
+
+def render_neon_badge(label, value, icon=None, color_hex=None, sub_label=None, ring_class=None):
+    """
+    Renders small Grid items (Quality, Trend, Constcy, EF, Z5).
+    """
+    if not color_hex: color_hex = "#888"
+    
+    # Ring Logic
+    ring_html = ""
+    if ring_class:
+        ring_html = f'<div class="absolute inset-0 rounded-full {ring_class} p-[1.5px] shadow-sm group-hover:shadow-glow-red transition-shadow"></div>'
+        bg_class = "absolute inset-[1.5px] z-10" # Inner container needs to fit inside ring
+    else:
+        # Standard Border
+        ring_html = f'<div class="absolute inset-0 rounded-full border-[2px]" style="border-color: {color_hex};" class="shadow-sm group-hover:shadow-glow-green transition-shadow"></div>'
+        bg_class = "flex flex-col items-center justify-center w-12 h-12 shadow-soft"
+
+    # Content Logic
+    content = ""
+    if icon:
+        if len(icon) == 1: # Unicode char
+             content = f'<span class="text-sm leading-tight" style="color: {color_hex}">{icon}</span>'
+        else: # Material Icon
+             content = f'<span class="material-icons-round text-base leading-none" style="color: {color_hex}">{icon}</span>'
+    else:
+        content = f'<span class="text-sm font-bold leading-tight" style="color: {color_hex}">{value}</span>'
+        
+    return f"""
+    <div class="relative w-16 h-16 flex items-center justify-center group cursor-pointer transition-all hover:-translate-y-1">
+        {ring_html}
+        <div class="{bg_class} bg-white dark:bg-surface-dark rounded-full flex flex-col items-center justify-center">
+            <span class="text-[0.4rem] font-bold text-gray-400 uppercase mb-0 leading-none">{label}</span>
+            {content}
+        </div>
+    </div>
+    """
 
 # --- 3. PUBLIC API (CONSUMERS) ---
 
-# Legacy / Simple Circles (Dashboard Bottom)
-def score_circle(score):
-    tier = get_score_tier(score, "score")
-    return render_stat_card(f"{float(score):.1f}", "", get_score_color(score), size=150, variant="simple", tier=tier)
+# Re-mapped to Neon Renderers
 
-def drift_circle(drift):
-    tier = get_score_tier(drift, "drift")
-    return render_stat_card(f"{float(drift):.1f}%", "", get_drift_color(drift), size=115, variant="simple", tier=tier)
+def render_kpi_score(score):
+    return render_neon_score(score)
+
+def render_kpi_drift(val):
+    return render_neon_drift(val)
+
+def render_kpi_percentile(val):
+    return render_neon_percentile(val)
 
 def quality_circle(q):
-    if not isinstance(q, dict): return render_stat_card(str(q) if q else "N/A", "QUALITY", "#888", size=115)
-    
-    label = q.get("label", "N/A").split()[0]
+    if not isinstance(q, dict): return render_neon_badge("Quality", "N/A", icon="?", color_hex="#888")
+    label = q.get("label", "N/A").split()[0] # e.g. "Solid"
     color = q.get("color", "#888")
-    return render_stat_card(label, "QUALITY", color, size=115)
+    # Icon mapping
+    icon = "🏆"
+    if "Weak" in label: icon = "🐌"
+    elif "Solid" in label: icon = "⚡"
+    elif "Great" in label: icon = "💎"
+    
+    return render_neon_badge("Quality", label, icon=icon, color_hex=color)
 
 def trend_circle(tr):
     direction = tr.get("direction", "flat")
-    if direction == "up": icon, color = "▲", Config.Theme.SECONDARY
-    elif direction == "down": icon, color = "▼", Config.Theme.DANGER
-    else: icon, color = "●", Config.Theme.SCORE_EPIC
-    return render_stat_card(icon, "TREND", color, size=115)
+    if direction == "up": icon, color = "arrow_drop_up", Config.Theme.SECONDARY
+    elif direction == "down": icon, color = "arrow_drop_down", Config.Theme.DANGER
+    else: icon, color = "remove", Config.Theme.ACCENT
+    return render_neon_badge("Trend", "", icon=icon, color_hex=color)
 
 def consistency_circle(cons_data):
-    if not cons_data or "score" not in cons_data:
-        return render_stat_card("N/A", "CONSTCY", Config.Theme.SCORE_EPIC, size=115)
-    
-    score = cons_data.get("score", 0)
+    # Just render scalar badge
+    score = cons_data.get("score", 0) if cons_data else 0
     color = Config.Theme.DANGER
     if score >= 80: color = Config.Theme.SECONDARY
     elif score >= 60: color = Config.Theme.PRIMARY
     elif score >= 40: color = Config.Theme.ACCENT
-    
-    return render_stat_card(f"{int(score)}", "CONSTCY", color, size=115)
+    return render_neon_badge("Constcy", str(int(score)), color_hex=color)
 
 def efficiency_circle(ef_data):
-    if not ef_data or ef_data.get("ef", 0) == 0:
-        return render_stat_card("—", "EF", Config.Theme.SCORE_EPIC, size=115)
-    
-    ef = ef_data.get("ef", 0)
-    interpretation = ef_data.get("interpretation", "")
-    
-    color = "#6B7280"
-    if "Elite" in interpretation or "Pro" in interpretation: color = "#8B5CF6"
-    elif "Very Good" in interpretation: color = Config.Theme.PRIMARY
-    elif "Good" in interpretation: color = Config.Theme.SECONDARY
-    
-    return render_stat_card(f"{ef}", "EF", color, size=115)
+    ef = ef_data.get("ef", 0) if ef_data else 0
+    return render_neon_badge("EF", f"{ef:.2f}", color_hex="#5C5CFF")
 
-# Modern KPI Renderers (Top Grid)
-def render_kpi_percentile(val):
-    tier = get_score_tier(val, "percentile")
-    return render_stat_card(
-        f"{float(val):.1f}%", 
-        "PERCENTILE", 
-        get_percentile_color(val), 
-        size=155, 
-        variant="glass",
-        tier=tier
-    )
+def zones_circle_badge(zone_label, pct):
+    """Small badge for max zone (e.g. Z5)"""
+    return render_neon_badge(zone_label, "", icon="", color_hex="#FB4141", ring_class="ring-gradient-orange-red")
 
-def render_kpi_drift(val):
-    tier = get_score_tier(val, "drift")
-    return render_stat_card(
-        f"{float(val):.1f}%", 
-        "DRIFT", 
-        get_drift_color(val), 
-        size=155, 
-        variant="glass",
-        tier=tier
-    )
+# Stub for compatibility if anything calls generic render_stat_card (deprecated)
+def render_stat_card(*args, **kwargs):
+    return render_neon_badge("Legacy", "N/A", color_hex="#888")
 
-def render_kpi_score(score):
-    try: s_val = float(score)
-    except: s_val = 0.0
-    tier = get_score_tier(s_val, "score")
-    return render_stat_card(
-        f"{s_val:.1f}", 
-        "SCORE", 
-        get_score_color(s_val), 
-        size=230, 
-        variant="progress", 
-        progress=s_val,
-        tier=tier
-    )
-
-def render_quality_badge(label, color_key="neutral"): pass 
-def render_trend_card(delta): pass
 def get_coach_feedback(trend): return "Analysis running..."
+
 
 # --- CHARTS ---
 

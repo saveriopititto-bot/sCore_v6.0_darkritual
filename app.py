@@ -34,7 +34,7 @@ st.set_page_config(
 )
 
 # Apply Theme
-from ui.style import apply_theme
+from ui.style_v2 import apply_theme
 apply_theme(state.theme)
 
 # --- DEV MODE ROUTING ---

@@ -34,38 +34,42 @@ class Config:
     # --- THEME & COLORS ---
     class Theme:
         """Centralized Color Palette for UI and Charts"""
-        # Primary Colors
-        PRIMARY = "#5CB338"
-        SECONDARY = "#ECE852"
-        ACCENT = "#FFC145"
-        DANGER = "#FB4141"
+        # Primary Colors (Neon Palette)
+        PRIMARY = "#FF6B6B"      # Red/Coral
+        SECONDARY = "#5CB338"    # Green
+        ACCENT = "#FFC145"       # Yellow
+        DANGER = "#FB4141"       # Red/Warning
+        INFO = "#5C5CFF"         # Blue
         
         # Backgrounds
-        BG_DARK = "#0f1115"
-        BG_LIGHT = "#FDFBF7"
+        BG_DARK = "#111827"
+        BG_LIGHT = "#F9FAFB"
         
-        # Cards
-        CARD_DARK = "rgba(255,255,255,0.05)"
-        CARD_LIGHT = "rgba(255,255,255,0.7)"
+        # Surfaces
+        SURFACE_LIGHT = "#FFFFFF"
+        SURFACE_DARK = "#1F2937"
         
         # Text
-        TEXT_DARK = "#f1f1f1"
+        TEXT_DARK = "#f3f4f6"
         TEXT_LIGHT = "#1f2937"
         
-        # Score Quality Colors
-        # Score Quality Colors (4-Logic System)
-        SCORE_EPIC = "#CDFAD5"      # Green/Diamond
-        SCORE_GREAT = "#F6FDC3"     # Yellow/Gold
-        SCORE_SOLID = "#FFCF96"     # Orange/Bronze
-        SCORE_WEAK = "#FF8080"      # Red/Danger
+        # Score Quality Colors (Matched to new Palette)
+        SCORE_EPIC = "#5CB338"      # Green
+        SCORE_GREAT = "#5C5CFF"     # Blue (changed from yellow to match HTML 'EF' or general cool vibe, or keep yellow?) 
+                                    # Wait, HTML uses Green for Score 81.4 (Great/Epic). 
+                                    # HTML uses Yellow for Drift 0.0%.
+                                    # HTML uses Blue for EF.
+                                    # Let's align with the ring gradients.
+        SCORE_SOLID = "#FFC145"     # Yellow
+        SCORE_WEAK = "#FB4141"      # Red
         
-        # Mappings for legacy support if needed, pointing to the 4 main colors
+        # Legacy mappings
         SCORE_LEGENDARY = SCORE_EPIC
         SCORE_WASTED = SCORE_WEAK
         
         # Gradients / Special
-        GLASS_BORDER_LIGHT = "rgba(255,255,255,0.4)"
-        GLASS_BORDER_DARK = "rgba(255,255,255,0.1)"
+        GLASS_BORDER_LIGHT = "rgba(229, 231, 235, 1)" # border-light
+        GLASS_BORDER_DARK = "rgba(55, 65, 81, 1)"     # border-dark
 
     # --- SCORE THRESHOLDS ---
     class Thresholds:
@@ -79,12 +83,13 @@ class Config:
 
 
     # Rank Colors (Hex for SVG/CSS)
+    # Rank Colors (Hex for SVG/CSS)
     RANK_COLORS = {
-        "ELITE": "#CDFAD5",
-        "PRO": "#3B82F6",
-        "ADVANCED": "#10B981",
-        "INTERMEDIATE": "#F59E0B",
-        "ROOKIE": "#9CA3AF"
+        "ELITE": "#5CB338", # Green
+        "PRO": "#5C5CFF",   # Blue
+        "ADVANCED": "#FFC145", # Yellow
+        "INTERMEDIATE": "#FF6B6B", # Primary/Coral
+        "ROOKIE": "#9CA3AF"  # Gray
     }
     
     # --- DEFAULTS ---
