@@ -13,26 +13,7 @@ if missing_secrets:
     st.error(f"❌ Segreti mancanti: {', '.join(missing_secrets)}")
     st.stop()
 
-import sys
-import os
-
-# Ensure root is in path
-root_path = os.path.dirname(__file__)
-if root_path not in sys.path:
-    sys.path.append(root_path)
-
-try:
-    from services.strava_api import StravaService
-except ImportError as e:
-    st.error(f"❌ Import Error: {e}")
-    st.error(f"Current Path: {sys.path}")
-    # Check if requests is installed
-    try:
-        import requests
-        st.success("Requests module is installed.")
-    except ImportError:
-        st.error("Requests module is NOT installed.")
-    st.stop()
+from services.strava_api import StravaService
 from services.db import DatabaseService
 from ui.state_manager import get_state
 
