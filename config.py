@@ -92,6 +92,14 @@ class Config:
         "ROOKIE": "#9CA3AF"  # Gray
     }
     
+    # --- UI COMPATIBILITY ---
+    SCORE_COLORS = {
+        "good": Theme.SCORE_EPIC,     # Green
+        "ok": Theme.SCORE_SOLID,      # Yellow
+        "neutral": Theme.SCORE_GREAT, # Blue
+        "bad": Theme.SCORE_WEAK       # Red
+    }
+    
     # --- DEFAULTS ---
     DEFAULT_WEIGHT = 70.0
     DEFAULT_HR_MAX = 185
