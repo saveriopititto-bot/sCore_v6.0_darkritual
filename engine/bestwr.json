@@ -1,0 +1,42 @@
+{
+    "world_records": {
+        "5km": {
+            "time_seconds": 755,
+            "name": "Cheptegei Joshua",
+            "year": 2020
+        },
+        "10km": {
+            "time_seconds": 1597,
+            "name": "Cheptegei Joshua",
+            "year": 2020
+        },
+        "15km": {
+            "time_seconds": 2478,
+            "name": "Cheptegei Joshua",
+            "year": 2018
+        },
+        "10mi": {
+            "time_seconds": 2632,
+            "name": "Rhonex Kipruto",
+            "year": 2020
+        },
+        "half_marathon": {
+            "time_seconds": 3694,
+            "name": "Kelvin Kiptum",
+            "year": 2023
+        },
+        "marathon": {
+            "time_seconds": 7168,
+            "name": "Kelvin Kiptum",
+            "year": 2023
+        }
+    },
+    "distance_lookup": {
+        "5000": "5km",
+        "10000": "10km",
+        "15000": "15km",
+        "16093": "10mi",
+        "21097": "half_marathon",
+        "42195": "marathon"
+    }
+}

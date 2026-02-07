@@ -1,0 +1,728 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap');
+
+/* ==========================================================================
+   sCore Design System - Main Stylesheet
+   ========================================================================== */
+
+/* TABLE OF CONTENTS
+   1. Variables & Root
+   2. Global Resets & Typography
+   3. Glass Morphism Cards
+   4. Stat Circles (Score & Zones)
+   5. Buttons & Interactive Elements
+   6. Expanders & Popovers
+   7. Details Row (Horizontal Scroll)
+   8. Animation Keyframes
+   9. Mobile Responsive
+   10. Utilities & Scrollbars
+*/
+
+/* ========================================
+   1. 🎨 VARIABLES & ROOT
+   ======================================== */
+
+:root {
+    /* Backgrounds */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --card-bg: rgba(255, 255, 255, 0.95);
+
+    /* Typography */
+    --text-primary: #1a1a1a;
+    --text-secondary: #636E72;
+
+    /* Accents & Borders */
+    --border-color: rgba(0, 0, 0, 0.08);
+    --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --glow-color: rgba(102, 126, 234, 0.4);
+
+    /* Animation */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Score Tier Colors - Dynamic Hover System */
+    --tier-epic: #CDFAD5;
+    --tier-epic-glow: rgba(205, 250, 213, 0.5);
+    --tier-great: #F6FDC3;
+    --tier-great-glow: rgba(246, 253, 195, 0.5);
+    --tier-solid: #FFCF96;
+    --tier-solid-glow: rgba(255, 207, 150, 0.5);
+    --tier-weak: #FF8080;
+    --tier-weak-glow: rgba(255, 128, 128, 0.5);
+}
+
+/* ========================================
+   2. 🌍 GLOBAL RESETS & TYPOGRAPHY
+   ======================================== */
+
+html,
+body,
+[class*="css"] {
+    font-family: 'Manrope', sans-serif !important;
+    background: #FDFBF7 !important;
+    color: var(--text-primary) !important;
+    scroll-behavior: smooth;
+}
+
+.stApp {
+    background: #FDFBF7 !important;
+}
+
+::selection {
+    background: rgba(102, 126, 234, 0.25);
+    color: #1a1a1a;
+}
+
+/* ========================================
+   3. ✨ GLASS MORPHISM CARDS
+   ======================================== */
+
+.glass-card {
+    background: #ffffff;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+    transition: left 0.6s ease;
+}
+
+.glass-card:hover::before {
+    left: 100%;
+}
+
+.glass-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(102, 126, 234, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+    border-color: rgba(102, 126, 234, 0.15);
+}
+
+/* ========================================
+   4. 🎯 STAT CIRCLES (SCORE & ZONES)
+   ======================================== */
+
+/* --- Base Stat Circle --- */
+.stat-circle {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    animation: floatIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: var(--transition-smooth);
+    position: relative;
+    cursor: pointer;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+}
+
+.stat-circle::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    background: inherit;
+    /* Will be overridden by border-color based gradient */
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.4s ease;
+    /* Create gradient using the border color */
+    filter: brightness(1.15) saturate(1.3);
+}
+
+.stat-circle:hover::before {
+    opacity: 0.5;
+    animation: pulse 2s infinite;
+}
+
+.stat-circle:hover {
+    /* Add glow matching border color using CSS variable */
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        0 0 0 1px var(--border-color),
+        0 0 20px var(--border-color);
+    transform: scale(1.03);
+}
+
+/* --- Stat Circle Zones --- */
+.stat-circle-zones {
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    animation: floatIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
+    transition: var(--transition-smooth);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+}
+
+.stat-circle-zones::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.stat-circle-zones:hover::after {
+    opacity: 1;
+}
+
+/* --- Dynamic Tier Hover Effects (Unified) --- */
+/* EPIC */
+.stat-circle[data-score-tier="epic"]::before {
+    background: linear-gradient(135deg, var(--tier-epic) 0%, #a8e6cf 100%);
+}
+
+.stat-circle[data-score-tier="epic"]:hover,
+.stat-circle-zones[data-score-tier="epic"]:hover {
+    transform: scale(1.08) translateY(-8px);
+    box-shadow: 0 8px 25px var(--tier-epic-glow), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--tier-epic);
+}
+
+/* GREAT */
+.stat-circle[data-score-tier="great"]::before {
+    background: linear-gradient(135deg, var(--tier-great) 0%, #ffd97d 100%);
+}
+
+.stat-circle[data-score-tier="great"]:hover,
+.stat-circle-zones[data-score-tier="great"]:hover {
+    transform: scale(1.08) translateY(-8px);
+    box-shadow: 0 8px 25px var(--tier-great-glow), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--tier-great);
+}
+
+/* SOLID */
+.stat-circle[data-score-tier="solid"]::before {
+    background: linear-gradient(135deg, var(--tier-solid) 0%, #ffab73 100%);
+}
+
+.stat-circle[data-score-tier="solid"]:hover,
+.stat-circle-zones[data-score-tier="solid"]:hover {
+    transform: scale(1.08) translateY(-8px);
+    box-shadow: 0 8px 25px var(--tier-solid-glow), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--tier-solid);
+}
+
+/* WEAK */
+.stat-circle[data-score-tier="weak"]::before {
+    background: linear-gradient(135deg, var(--tier-weak) 0%, #ff6b6b 100%);
+}
+
+.stat-circle[data-score-tier="weak"]:hover,
+.stat-circle-zones[data-score-tier="weak"]:hover {
+    transform: scale(1.08) translateY(-8px);
+    box-shadow: 0 8px 25px var(--tier-weak-glow), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--tier-weak);
+}
+
+/* Fallback (No Tier) */
+.stat-circle:not([data-score-tier]):hover,
+.stat-circle-zones:not([data-score-tier]):hover {
+    transform: scale(1.08) translateY(-8px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.stat-circle:active {
+    transform: scale(1.02) translateY(-2px);
+}
+
+/* --- Hover Labels --- */
+.stat-label {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-top: -5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.stat-circle:hover .stat-label,
+.stat-circle-zones:hover .stat-label {
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 0px;
+}
+
+/* --- Score Circle SVG --- */
+.score-circle-svg circle.progress {
+    fill: none;
+    stroke-width: 8;
+    stroke-dasharray: 0, 1000;
+    transition: stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.4));
+}
+
+.score-circle-container {
+    transition: var(--transition-smooth);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.score-circle-container>div {
+    aspect-ratio: 1 / 1;
+}
+
+.score-circle-container:hover {
+    transform: scale(1.05) rotate(2deg);
+}
+
+.score-circle-container:hover circle.progress {
+    stroke-dasharray: 800, 1000;
+    stroke-width: 10;
+}
+
+/* ========================================
+   5. 🔘 BUTTONS & INTERACTIVE ELEMENTS
+   ======================================== */
+
+div.stButton>button {
+    background: linear-gradient(145deg, #ffffff 0%, #f0f0f0 100%) !important;
+    color: #1a1a1a !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 16px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+div.stButton>button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(102, 126, 234, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+div.stButton>button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+div.stButton>button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 -2px 6px rgba(0, 0, 0, 0.08);
+    color: #000000 !important;
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border-color: rgba(102, 126, 234, 0.3) !important;
+}
+
+div.stButton>button:active {
+    transform: scale(0.97) translateY(-1px);
+    transition: all 0.1s ease;
+}
+
+/* ========================================
+   6. 📦 EXPANDERS (POPOVERS)
+   ======================================== */
+
+div[data-testid="stExpander"] details summary {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%) !important;
+    color: #2d3436 !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08), inset 0 -2px 4px rgba(0, 0, 0, 0.03) !important;
+    padding: 0.75rem 1.5rem !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    font-size: 0.85rem !important;
+    transition: var(--transition-smooth) !important;
+    margin-bottom: 0px !important;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+
+    width: fit-content !important;
+    min-width: 200px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+div[data-testid="stExpander"] details[open] summary {
+    border-radius: 16px !important;
+    margin-bottom: 0px;
+    border-bottom: none !important;
+    background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%) !important;
+}
+
+div[data-testid="stExpander"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+div[data-testid="stExpander"] details {
+    border-color: transparent !important;
+}
+
+div[data-testid="stExpander"] details summary svg {
+    display: none !important;
+}
+
+/* Hide > Arrow */
+
+/* ========================================
+   7. 📋 DETAILS ROW (HORIZONTAL SCROLL)
+   ======================================== */
+
+.details-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -10px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+    /* Hide scrollbars (Standardized) */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.details-row::-webkit-scrollbar {
+    display: none;
+}
+
+.details-row [data-testid="stPopover"] {
+    flex: 0 0 auto;
+    min-width: 140px;
+}
+
+/* ========================================
+   8. 💫 ANIMATION KEYFRAMES
+   ======================================== */
+
+@keyframes floatIn {
+    from {
+        transform: scale(0.8) translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.5;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px var(--glow-color);
+    }
+
+    50% {
+        box-shadow: 0 0 40px var(--glow-color), 0 0 60px var(--glow-color);
+    }
+}
+
+/* ========================================
+   9. 📱 MOBILE RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+
+    .stat-circle,
+    .stat-circle-zones {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    /* Ensure KPI circles maintain proportions on mobile */
+    .stat-circle[style*="width: 155px"],
+    .score-circle-container>div[style*="width: 230px"] {
+        max-width: 90vw;
+        height: auto !important;
+    }
+
+    .stat-circle span:nth-of-type(1),
+    .stat-circle-zones span:nth-of-type(1) {
+        font-size: 0.55rem !important;
+    }
+
+    .stat-circle span:nth-of-type(2),
+    .stat-circle-zones span:nth-of-type(2) {
+        font-size: 1.6rem !important;
+    }
+
+    .stat-circle div,
+    .stat-circle-zones div {
+        font-size: 0.5rem !important;
+        padding: 2px 8px !important;
+        margin-top: 3px !important;
+    }
+
+    .score-circle-container {
+        transform: scale(0.7);
+        transform-origin: top center;
+        margin-bottom: -60px;
+    }
+
+    .glass-card {
+        border-radius: 16px;
+        padding: 16px;
+    }
+
+    div.stButton>button,
+    div[data-testid="stExpander"] details summary {
+        padding: 0.6rem 1rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    .details-row [data-testid="stPopover"] {
+        min-width: 120px;
+    }
+}
+
+/* ========================================
+   10. 🎨 UTILITIES & SCROLLBARS
+   ======================================== */
+
+.gradient-text {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+}
+
+.shimmer-effect {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+.glow-on-hover:hover {
+    animation: glow 2s infinite;
+}
+
+/* Custom Scrollbar for global window (Desktop only) */
+@media (min-width: 769px) {
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.02);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 10px;
+        transition: background 0.3s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* ========================================
+   11. 👤 NAVBAR (TOP SECTION)
+   ======================================== */
+
+/* Navbar Container */
+.custom-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+/* Left Section: Avatar + Name */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 1 auto;
+}
+
+.navbar-avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: var(--transition-smooth);
+}
+
+.navbar-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-name {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.navbar-name-text {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1a1a1a;
+    line-height: 1.2;
+}
+
+.navbar-id {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    display: none;
+    /* Hidden by default */
+}
+
+/* Center Spacer */
+.navbar-spacer {
+    flex: 1 1 auto;
+}
+
+/* Right Section: Buttons */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 1 auto;
+}
+
+/* Responsive - Tablet/Mobile */
+@media (max-width: 768px) {
+    .custom-navbar {
+        flex-wrap: wrap;
+        padding: 12px 15px;
+        gap: 10px;
+    }
+
+    .navbar-left {
+        flex: 1 1 100%;
+        justify-content: flex-start;
+    }
+
+    .navbar-avatar {
+        width: 45px;
+        height: 45px;
+    }
+
+    .navbar-name-text {
+        font-size: 1rem;
+    }
+
+    .navbar-spacer {
+        display: none;
+    }
+
+    .navbar-right {
+        flex: 1 1 100%;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .navbar-right>div {
+        flex: 1;
+    }
+}
+
+/* Responsive - Small Mobile */
+@media (max-width: 480px) {
+    .custom-navbar {
+        padding: 10px;
+    }
+
+    .navbar-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .navbar-name-text {
+        font-size: 0.9rem;
+    }
+}

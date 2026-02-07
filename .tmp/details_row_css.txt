@@ -1,0 +1,41 @@
+
+/* ========================================
+   📋 DETAILS ROW - HORIZONTAL SCROLL
+   ======================================== */
+
+.details-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap; /* Impedisce di andare a capo */
+    justify-content: flex-start;
+    gap: 10px;
+    overflow-x: auto; /* Permette lo scroll orizzontale su schermi piccoli */
+    padding: 10px 0;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling su iOS */
+    margin: 0 -10px; /* Negative margin per estendere ai bordi */
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Nasconde la barra di scorrimento per un look pulito */
+.details-row::-webkit-scrollbar {
+    display: none;
+}
+
+.details-row {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Popover buttons dentro details-row */
+.details-row [data-testid="stPopover"] {
+    flex: 0 0 auto; /* Non si allarga, non si restringe */
+    min-width: 140px; /* Larghezza minima per leggibilità */
+}
+
+/* Mobile: Rendi i bottoni più grandi per touch */
+@media (max-width: 768px) {
+    .details-row [data-testid="stPopover"] {
+        min-width: 120px;
+    }
+}
